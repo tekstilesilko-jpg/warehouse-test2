@@ -103,7 +103,7 @@ After a successful push/deploy run, verify the production URL from Cloudflare Wo
 
 Deployment failures after secrets are configured are usually actionable in the workflow step log:
 
-- If `Validate Cloudflare deployment secrets` fails, add the three required values in:
+- If `Validate Cloudflare deployment secrets` fails, add the two required values in:
   `Settings > Secrets and variables > Actions > Repository secrets`.
 - If `Deploy to Cloudflare Workers` fails, rerun the failed run after secrets are corrected and check the deploy action output.
 
