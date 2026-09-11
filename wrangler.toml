@@ -21,5 +21,8 @@ enabled = true
 [vars]
 ENVIRONMENT = "PREVIEW"
 
+[env.production.vars]
+ENVIRONMENT = "PREVIEW"
+
 [triggers]
 crons = ["0 3 * * *"]
