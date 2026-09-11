@@ -37,8 +37,16 @@ jobs:
       - name: Validate Cloudflare deployment secrets
         if: github.event_name == 'push'
         run: |
-          if [ -z "${CLOUDFLARE_API_TOKEN}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID}" ] || [ -z "${WRANGLER_D1_DATABASE_ID}" ]; then
-            echo "::error::Missing required Cloudflare secrets. Add CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, and WRANGLER_D1_DATABASE_ID before running deployment."
+          if [ -z "${CLOUDFLARE_API_TOKEN}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID}" ]; then
+            echo "::error::Missing required Cloudflare secrets for deploy. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID before deployment."
+            exit 1
+          fi
+
+      - name: Validate Cloudflare migration secrets
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_migrations == 'true'
+        run: |
+          if [ -z "${WRANGLER_D1_DATABASE_ID}" ]; then
+            echo "::error::Missing WRANGLER_D1_DATABASE_ID for migration step. Add the secret, or run without migrations."
             exit 1
           fi
 
