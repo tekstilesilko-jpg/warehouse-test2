@@ -11,6 +11,8 @@
   "scripts": {
     "dev": "npx wrangler@3 dev --local --port 8787",
     "deploy": "npx wrangler@3 deploy",
+    "ci:check-deploy-secrets": "bash -lc 'if [ -z \"$CLOUDFLARE_API_TOKEN\" ] || [ -z \"$CLOUDFLARE_ACCOUNT_ID\" ]; then echo \"Missing CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID\"; exit 1; fi'",
+    "ci:check-migration-secrets": "bash -lc 'if [ -z \"$WRANGLER_D1_DATABASE_ID\" ]; then echo \"Missing WRANGLER_D1_DATABASE_ID\"; exit 1; fi'",
     "db:migrate": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0001_init.sql",
     "db:seed": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0002_seed.sql",
     "db:status": "npx wrangler@3 d1 execute warehouse-preview-db --local --command \"SELECT name FROM sqlite_master WHERE type='table';\"",
