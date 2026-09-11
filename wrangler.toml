@@ -1,0 +1,24 @@
+name = "warehouse-test2-preview"
+main = "src/index.ts"
+compatibility_date = "2026-09-11"
+compatibility_flags = ["nodejs_compat"]
+send_metrics = true
+
+[[d1_databases]]
+binding = "WAREHOUSE_DB"
+database_name = "warehouse-preview-db"
+database_id = "local-warehouse-preview-db"
+
+[[env.production.d1_databases]]
+binding = "WAREHOUSE_DB"
+database_name = "warehouse-preview-db"
+database_id = "${WRANGLER_D1_DATABASE_ID}"
+
+[observability]
+logs = true
+
+[vars]
+ENVIRONMENT = "PREVIEW"
+
+[triggers]
+crons = ["0 3 * * *"]

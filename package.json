@@ -1,0 +1,29 @@
+{
+  "name": "warehouse-test2-preview",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Preview-ready Digital Warehouse Automation unit (separate from existing production folder).",
+  "type": "module",
+  "engines": {
+    "node": ">=16.13",
+    "npm": ">=8"
+  },
+  "scripts": {
+    "dev": "npx wrangler@3 dev --local --port 8787",
+    "deploy": "npx wrangler@3 deploy",
+    "db:migrate": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0001_init.sql",
+    "db:seed": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0002_seed.sql",
+    "db:status": "npx wrangler@3 d1 execute warehouse-preview-db --local --command \"SELECT name FROM sqlite_master WHERE type='table';\"",
+    "db:remote:migrate": "npx wrangler@3 d1 execute $WRANGLER_D1_DATABASE_ID --remote --file=./src/db/migrations/0001_init.sql",
+    "db:remote:seed": "npx wrangler@3 d1 execute $WRANGLER_D1_DATABASE_ID --remote --file=./src/db/migrations/0002_seed.sql",
+    "publish": "npm run dev"
+  },
+  "dependencies": {
+    "hono": "^4.3.9",
+    "decimal.js": "^10.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "wrangler": "^3.84.1"
+  }
+}
