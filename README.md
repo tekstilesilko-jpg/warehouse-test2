@@ -50,6 +50,12 @@ Source specification file copied into this repository:
      - `sales@demo.local`
      - `admin@demo.local`
 
+7. Optional quick smoke check (while dev server is running):
+
+   ```powershell
+   npm run smoke:api
+   ```
+
 ## Deployment
 
 ### Manual deploy (local machine)
@@ -58,6 +64,13 @@ When credentials are configured and bindings are set, deploy with:
 
 ```powershell
 npm run deploy
+```
+
+For post-push quick verification:
+
+```powershell
+$env:WORKER_BASE_URL="https://<your-worker-subdomain>.workers.dev"
+npm run smoke:api
 ```
 
 `wrangler.toml` already defines:
@@ -78,6 +91,7 @@ Environment requirements:
 
 - `WRANGLER_D1_DATABASE_ID`
 - `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` (for deploy)
+- `npm run deploy` uses Cloudflare `production` env and requires `WRANGLER_D1_DATABASE_ID` to be set in GitHub for remote D1 binding.
 
 ### GitHub auto-deploy
 

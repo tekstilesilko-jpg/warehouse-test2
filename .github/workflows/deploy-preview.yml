@@ -35,12 +35,8 @@ jobs:
         run: npm ci
 
       - name: Validate Cloudflare deployment secrets
-        if: github.event_name == 'push'
         run: |
-          if [ -z "${CLOUDFLARE_API_TOKEN}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID}" ]; then
-            echo "::error::Missing required Cloudflare secrets for deploy. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID before deployment."
-            exit 1
-          fi
+          npm run ci:check-deploy-secrets
 
       - name: Validate Cloudflare migration secrets
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_migrations == 'true'
@@ -55,7 +51,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+          command: deploy --env production
 
       - name: Provision initial tables (first run)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_migrations == 'true'

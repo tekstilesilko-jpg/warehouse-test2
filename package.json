@@ -10,15 +10,16 @@
   },
   "scripts": {
     "dev": "npx wrangler@3 dev --local --port 8787",
-    "deploy": "npx wrangler@3 deploy",
-    "ci:check-deploy-secrets": "bash -lc 'if [ -z \"$CLOUDFLARE_API_TOKEN\" ] || [ -z \"$CLOUDFLARE_ACCOUNT_ID\" ]; then echo \"Missing CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID\"; exit 1; fi'",
-    "ci:check-migration-secrets": "bash -lc 'if [ -z \"$WRANGLER_D1_DATABASE_ID\" ]; then echo \"Missing WRANGLER_D1_DATABASE_ID\"; exit 1; fi'",
+    "deploy": "npx wrangler@3 deploy --env production",
+    "ci:check-deploy-secrets": "node -e \"if (!process.env.CLOUDFLARE_API_TOKEN || !process.env.CLOUDFLARE_ACCOUNT_ID) { console.error('Missing CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID'); process.exit(1); }\"",
+    "ci:check-migration-secrets": "node -e \"if (!process.env.WRANGLER_D1_DATABASE_ID) { console.error('Missing WRANGLER_D1_DATABASE_ID'); process.exit(1); }\"",
     "db:migrate": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0001_init.sql",
     "db:seed": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0002_seed.sql",
     "db:status": "npx wrangler@3 d1 execute warehouse-preview-db --local --command \"SELECT name FROM sqlite_master WHERE type='table';\"",
     "db:remote:migrate": "npx wrangler@3 d1 execute $WRANGLER_D1_DATABASE_ID --remote --file=./src/db/migrations/0001_init.sql",
     "db:remote:seed": "npx wrangler@3 d1 execute $WRANGLER_D1_DATABASE_ID --remote --file=./src/db/migrations/0002_seed.sql",
-    "publish": "npm run dev"
+    "smoke:api": "node -e \"(async()=>{const base=process.env.WORKER_BASE_URL||'http://127.0.0.1:8787';const headers={'x-user-email':'admin@demo.local'};const health=await(await fetch(`${base}/api/health`)).json();if(!health?.ok){console.error('Health check failed',health);process.exit(1);}const inventory=await(await fetch(`${base}/api/inventory`,{headers})).json();if(!inventory||!Array.isArray(inventory.inventory)){console.error('Inventory payload invalid',inventory);process.exit(1);}console.log('Smoke check OK',inventory.inventory.length);})()\"",
+    "publish": "npm run deploy"
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20251201.0",
