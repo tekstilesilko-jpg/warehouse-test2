@@ -339,9 +339,30 @@ app.get('/', async (c) => {
         async function loadInventory() {
           const data = await request('/api/inventory');
           const html = ['<table><thead><tr><th>ID</th><th>Aprašymas</th><th>vnt.</th><th>Sandėlyje</th><th>Rezervuota</th><th>Kokybinė sulaikymo</th><th>Pasiekiama</th></tr></thead><tbody>']
-            .concat(data.inventory.map((row) => `<tr><td>${row.productId}</td><td>${row.description}</td><td>${row.unit}</td><td>${row.onHand}</td><td>${row.reserved}</td><td>${row.qualityHold}</td><td>${row.available}</td></tr>`))
+            .concat(
+              data.inventory.map(
+                (row) =>
+                  '<tr><td>' +
+                  row.productId +
+                  '</td><td>' +
+                  row.description +
+                  '</td><td>' +
+                  row.unit +
+                  '</td><td>' +
+                  row.onHand +
+                  '</td><td>' +
+                  row.reserved +
+                  '</td><td>' +
+                  row.qualityHold +
+                  '</td><td>' +
+                  row.available +
+                  '</td></tr>',
+              ),
+            )
             .concat(['</tbody></table>']).join('');
-          document.getElementById('inv-meta').textContent = `${state.lang === 'lt' ? 'Atnaujinta' : 'Last refresh'}: ${new Date().toLocaleString()}`;
+          const refreshedAt = new Date().toLocaleString();
+          document.getElementById('inv-meta').textContent =
+            (state.lang === 'lt' ? 'Atnaujinta' : 'Last refresh') + ': ' + refreshedAt;
           document.getElementById('inventoryWrap').innerHTML = html;
         }
 
@@ -355,22 +376,51 @@ app.get('/', async (c) => {
         function renderReview() {
           const draft = state.draft;
           if (!draft) return;
-          const rows = ['<table><thead><tr><th>Eil.</th><th>Atspausdinta prekė</th><th>Kiekyje</th><th>Matą</th><th>Pozicijos ID</th><th>Paieška</th><th>Būsena</th></tr></thead><tbody>']
+          const rows = [
+            '<table><thead><tr><th>Eil.</th><th>Atspausdinta prekė</th><th>Kiekyje</th><th>Matą</th><th>Pozicijos ID</th><th>Paieška</th><th>Būsena</th></tr></thead><tbody>',
+          ]
             .concat(draft.lines.map((line) => {
               const cands = line.candidates || [];
-              const options = cands.map((c) => `<option value="${c.id}" ${c.id === line.matchedProductId ? 'selected' : ''}>${c.productId} — ${c.description}</option>`).join('');
-              return `<tr data-line="${line.id}">
-                  <td>${line.lineNo}</td>
-                  <td>${line.printedDescription || ''}</td>
-                  <td><input class="line-edit" data-field="editedQuantity" value="${line.editedQuantity}" /></td>
-                  <td><input class="line-edit" data-field="editedUnit" value="${line.editedUnit}" /></td>
-                  <td><input class="line-edit" data-field="editedProductId" value="${line.editedProductId || ''}" /></td>
-                  <td><select data-field="match">${options}<option value="">${labels[state.lang].unknownProduct}</option></select></td>
-                  <td>${line.matchStatus}${line.warning ? ' ⚠ ' + line.warning : ''}</td>
-                </tr>`;
+              const options = cands
+                .map(
+                  (c) =>
+                    '<option value="' +
+                    c.id +
+                    '" ' +
+                    (c.id === line.matchedProductId ? 'selected' : '') +
+                    '>' +
+                    c.productId +
+                    ' — ' +
+                    c.description +
+                    '</option>',
+                )
+                .join('');
+              const unknown = '<option value="">' + labels[state.lang].unknownProduct + '</option>';
+              return (
+                '<tr data-line="' +
+                line.id +
+                '"><td>' +
+                line.lineNo +
+                '</td><td>' +
+                (line.printedDescription || '') +
+                '</td><td><input class="line-edit" data-field="editedQuantity" value="' +
+                line.editedQuantity +
+                '" /></td><td><input class="line-edit" data-field="editedUnit" value="' +
+                line.editedUnit +
+                '" /></td><td><input class="line-edit" data-field="editedProductId" value="' +
+                (line.editedProductId || '') +
+                '" /></td><td><select data-field="match">' +
+                options +
+                unknown +
+                '</select></td><td>' +
+                line.matchStatus +
+                (line.warning ? ' ⚠ ' + line.warning : '') +
+                '</td></tr>'
+              );
             }))
             .concat(['</tbody></table>']).join('');
-          document.getElementById('reviewMeta').innerHTML = `<div><strong>${draft.documentNumber}</strong> — ${draft.counterpartName} (${draft.status})</div><div class="small">${draft.documentType}</div>`;
+          document.getElementById('reviewMeta').innerHTML =
+            '<div><strong>' + draft.documentNumber + '</strong> — ' + draft.counterpartName + ' (' + draft.status + ')</div><div class="small">' + draft.documentType + '</div>';
           document.getElementById('reviewLines').innerHTML = rows;
           document.querySelectorAll('select[data-field="match"], input.line-edit').forEach((el) => {
             el.addEventListener('change', async (event) => {
@@ -384,8 +434,8 @@ app.get('/', async (c) => {
               if (lineField === 'editedQuantity') body.editedQuantity = target.value || null;
               if (lineField === 'editedUnit') body.editedUnit = target.value || null;
               try {
-                await request(`/api/review-cases/${draft.id}/lines/${lineId}`, 'PUT', body);
-                document.getElementById('reviewMessage').textContent = `${labels[state.lang].resetDone}.`;
+                await request('/api/review-cases/' + draft.id + '/lines/' + lineId, 'PUT', body);
+                document.getElementById('reviewMessage').textContent = labels[state.lang].resetDone + '.';
               } catch (e) {
                 alert(e.message);
               }
@@ -403,7 +453,17 @@ app.get('/', async (c) => {
             .concat(
               inbox.cases.map(
                 (item) =>
-                  `<tr><td>${item.documentNumber}</td><td>${item.documentType}</td><td>${item.status}</td><td>${item.warning || '-'}</td><td><button data-open="${item.id}">Atidaryti</button></td></tr>`,
+                  '<tr><td>' +
+                    item.documentNumber +
+                    '</td><td>' +
+                    item.documentType +
+                    '</td><td>' +
+                    item.status +
+                    '</td><td>' +
+                    (item.warning || '-') +
+                    '</td><td><button data-open="' +
+                    item.id +
+                    '">Atidaryti</button></td></tr>',
               ),
             )
             .concat(['</tbody></table>']).join('');
@@ -419,14 +479,14 @@ app.get('/', async (c) => {
 
         confirmBtn.addEventListener('click', async () => {
           if (!state.selectedDraftId) return;
-          await request(`/api/review-cases/${state.selectedDraftId}/confirm`, 'POST');
+          await request('/api/review-cases/' + state.selectedDraftId + '/confirm', 'POST');
           document.getElementById('reviewMessage').textContent = state.lang === 'lt' ? 'Dokumentas patvirtintas.' : 'Document confirmed.';
           await refreshAll();
         });
 
         cancelBtn.addEventListener('click', async () => {
           if (!state.selectedDraftId) return;
-          await request(`/api/review-cases/${state.selectedDraftId}/cancel`, 'POST');
+          await request('/api/review-cases/' + state.selectedDraftId + '/cancel', 'POST');
           document.getElementById('reviewMessage').textContent = state.lang === 'lt' ? 'Dokumentas atšauktas.' : 'Document cancelled.';
           await refreshAll();
         });

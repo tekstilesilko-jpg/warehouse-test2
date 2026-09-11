@@ -19,6 +19,7 @@
     "publish": "npm run dev"
   },
   "dependencies": {
+    "@cloudflare/workers-types": "^4.20251201.0",
     "hono": "^4.3.9",
     "decimal.js": "^10.4.3"
   },
