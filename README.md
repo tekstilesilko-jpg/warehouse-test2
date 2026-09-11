@@ -89,6 +89,24 @@ Required GitHub secrets:
 - `CLOUDFLARE_ACCOUNT_ID`
 - `WRANGLER_D1_DATABASE_ID`
 
+### Post-deploy verification
+
+After a successful push/deploy run, verify the production URL from Cloudflare Workers:
+
+1. Open the worker URL and check:
+
+   - `https://<your-worker>/api/health` should return `{ "ok": true }`.
+   - `https://<your-worker>/` should render the preview UI.
+   - Use header `x-user-email: admin@demo.local` on API routes (for example `/api/me`) to confirm auth boundary.
+
+2. If you do not use an existing worker route yet, the latest deployment log contains the worker URL in the Wrangler output.
+
+Deployment failures after secrets are configured are usually actionable in the workflow step log:
+
+- If `Validate Cloudflare deployment secrets` fails, add the three required values in:
+  `Settings > Secrets and variables > Actions > Repository secrets`.
+- If `Deploy to Cloudflare Workers` fails, rerun the failed run after secrets are corrected and check the deploy action output.
+
 ## Admin functions
 
 - `POST /api/admin/preview/reset` reinitializes seeded fixtures for demonstration.
