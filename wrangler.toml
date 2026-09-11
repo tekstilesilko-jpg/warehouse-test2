@@ -15,7 +15,8 @@ database_name = "warehouse-preview-db"
 database_id = "${WRANGLER_D1_DATABASE_ID}"
 
 [observability]
-logs = true
+[observability.logs]
+enabled = true
 
 [vars]
 ENVIRONMENT = "PREVIEW"
