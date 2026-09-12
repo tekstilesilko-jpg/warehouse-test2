@@ -16,8 +16,8 @@
     "db:migrate": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0001_init.sql",
     "db:seed": "npx wrangler@3 d1 execute warehouse-preview-db --local --file=./src/db/migrations/0002_seed.sql",
     "db:status": "npx wrangler@3 d1 execute warehouse-preview-db --local --command \"SELECT name FROM sqlite_master WHERE type='table';\"",
-    "db:remote:migrate": "npx wrangler@3 d1 execute $WRANGLER_D1_DATABASE_ID --remote --file=./src/db/migrations/0001_init.sql",
-    "db:remote:seed": "npx wrangler@3 d1 execute $WRANGLER_D1_DATABASE_ID --remote --file=./src/db/migrations/0002_seed.sql",
+    "db:remote:migrate": "npx wrangler@3 d1 execute warehouse-preview-db --env production --remote --file=./src/db/migrations/0001_init.sql",
+    "db:remote:seed": "npx wrangler@3 d1 execute warehouse-preview-db --env production --remote --file=./src/db/migrations/0002_seed.sql",
     "smoke:api": "node -e \"(async()=>{const base=process.env.WORKER_BASE_URL||'http://127.0.0.1:8787';const headers={'x-user-email':'admin@demo.local'};const health=await(await fetch(`${base}/api/health`)).json();if(!health?.ok){console.error('Health check failed',health);process.exit(1);}const inventory=await(await fetch(`${base}/api/inventory`,{headers})).json();if(!inventory||!Array.isArray(inventory.inventory)){console.error('Inventory payload invalid',inventory);process.exit(1);}console.log('Smoke check OK',inventory.inventory.length);})()\"",
     "publish": "npm run deploy"
   },

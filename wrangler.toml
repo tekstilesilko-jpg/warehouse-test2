@@ -12,7 +12,7 @@ database_id = "local-warehouse-preview-db"
 [[env.production.d1_databases]]
 binding = "WAREHOUSE_DB"
 database_name = "warehouse-preview-db"
-database_id = "${WRANGLER_D1_DATABASE_ID}"
+database_id = "2ba99352-22ef-4514-9514-1f6d08c6ff02"
 
 [observability]
 [observability.logs]

@@ -79,19 +79,16 @@ npm run smoke:api
 - Preview D1 DB binding name: `WAREHOUSE_DB`
 - Cron trigger placeholder for future orchestration rounds: daily `03:00`
 
-To run remote DB setup from the terminal, pass `WRANGLER_D1_DATABASE_ID`:
+To run remote DB setup from the terminal:
 
 ```powershell
-$env:WRANGLER_D1_DATABASE_ID="your-d1-id"
 npm run db:remote:migrate
 npm run db:remote:seed
 ```
 
 Environment requirements:
 
-- `WRANGLER_D1_DATABASE_ID`
 - `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` (for deploy)
-- `npm run deploy` uses Cloudflare `production` env and requires `WRANGLER_D1_DATABASE_ID` to be set in GitHub for remote D1 binding.
 
 ### GitHub auto-deploy
 
@@ -101,7 +98,7 @@ Required GitHub secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
-- `WRANGLER_D1_DATABASE_ID`
+- *(no separate D1 secret required; D1 UUID is configured in `wrangler.toml`)*
 
 ### Post-deploy verification
 
